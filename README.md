@@ -1,1 +1,1 @@
-# ZSPNietazkowoTI.github.io
+# ZSPNietazkowo.github.io

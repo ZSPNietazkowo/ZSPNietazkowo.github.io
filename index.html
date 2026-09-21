@@ -3,21 +3,258 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZSP Nietążkowo</title>
+    <title>Technik Informatyk - ZSP Nietążkowo</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-            background-color: #f4f4f9;
+        :root {
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-light: #f8fafc;
+            --text-gray: #94a3b8;
+            --accent-green: #10b981;
+            --accent-purple: #a855f7;
+            --accent-blue: #3b82f6;
         }
-        h1 {
-            color: #2c3e50;
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: 0 auto 30px auto;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: var(--text-gray);
+            font-size: 1.1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card.esport { border-top: 4px solid var(--accent-purple); }
+        .card.cyber { border-top: 4px solid var(--accent-green); }
+        .card.ai { border-top: 4px solid var(--accent-blue); }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            width: fit-content;
+        }
+
+        .esport .badge { background: rgba(168, 85, 247, 0.2); color: var(--accent-purple); }
+        .cyber .badge { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .ai .badge { background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: var(--primary);
+            letter-spacing: 1px;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        ul {
+            list-style: none;
+            margin-bottom: 15px;
+        }
+
+        ul li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+        }
+
+        ul li::before {
+            content: "▹";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        .qualifications {
+            background: rgba(0,0,0,0.2);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            margin-bottom: 15px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
     </style>
 </head>
 <body>
-    <h1>Witaj na stronie ZSP Nietążkowo!</h1>
-    <p>Strona jest w trakcie budowy.</p>
+
+    <header>
+        <h1>Technik Informatyk</h1>
+        <p>Innowacyjne profile kształcenia i rozszerzenia w ZSP Nietążkowo</p>
+    </header>
+
+    <main class="container">
+
+        <!-- PROFIL 1 -->
+        <article class="card esport">
+            <div>
+                <span class="badge">Profil Innowacyjny</span>
+                <h2>Technologie E-sportu i AI</h2>
+                <p class="subtitle">Specjalizacja nakierowana na infrastrukturę gamingową, serwery oraz e-sport.</p>
+                
+                <div class="qualifications">
+                    <strong>Główne kwalifikacje:</strong><br>
+                    • INF.02 (Hardware, sieci, systemy)<br>
+                    • INF.03 (Aplikacje, strony WWW)
+                </div>
+
+                <div class="section-title">Przedmioty innowacyjne (1–2 h/tyg. od 2. kl.)</div>
+                <ul>
+                    <li>Architektura Sprzętu Gamingowego i Sieci LAN/WAN</li>
+                    <li>Serwery Gier i Administracja Infrastrukturą E-sportową</li>
+                </ul>
+
+                <div class="section-title">Zakres materiału i umiejętności</div>
+                <ul>
+                    <li><strong>Sieci pod e-sport:</strong> Budowa niskopóźnieniowych sieci LAN na turnieje (routing, QoS, minimalizacja pingu, ochrona DDoS).</li>
+                    <li><strong>Sprzęt i modding:</strong> Overclocking, diagnostyka, chłodzenie, budowa stacji do gier i streamingu.</li>
+                    <li><strong>Serwery gier:</strong> Stawianie dedykowanych serwerów (CS2, Minecraft, Rust) na Linux/Windows Server.</li>
+                    <li><strong>Laboratorium AI:</strong> Optymalizacja kodu z AI, analiza statystyk graczy, testy GPU na laptopach z KPO.</li>
+                </ul>
+            </div>
+        </article>
+
+        <!-- PROFIL 2 -->
+        <article class="card cyber">
+            <div>
+                <span class="badge">Profil Innowacyjny</span>
+                <h2>Cyberbezpieczeństwo</h2>
+                <p class="subtitle">Klasa ukierunkowana na ochronę infrastruktury cyfrowej i etyczny hacking.</p>
+
+                <div class="qualifications">
+                    <strong>Główne kwalifikacje:</strong><br>
+                    • INF.02 (Administracja sieciami)<br>
+                    • INF.03 (Aplikacje i bazy)
+                </div>
+
+                <div class="section-title">Przedmioty innowacyjne (1–2 h/tyg. od 2. kl.)</div>
+                <ul>
+                    <li>Praktyczne Cyberbezpieczeństwo</li>
+                    <li>Automatyzacja i Administracja Systemami (Bash/Python)</li>
+                </ul>
+
+                <div class="section-title">Zakres materiału i umiejętności</div>
+                <ul>
+                    <li><strong>Bezpieczeństwo sieci:</strong> Konfiguracja firewalli, systemów IDS/IPS, sieci VPN i segmentacja VLAN.</li>
+                    <li><strong>Etyczny hacking:</strong> Analiza ruchu (Wireshark), skanowanie podatności (Nmap) i testy penetracyjne.</li>
+                    <li><strong>Twarda administracja:</strong> Zarządzanie systemami Linux (Debian/Ubuntu Server) oraz Windows Server.</li>
+                    <li><strong>Laboratorium AI:</strong> Detekcja anomalii sieciowych przy użyciu lokalnych modeli AI, automatyzacja skryptów.</li>
+                </ul>
+            </div>
+        </article>
+
+        <!-- PROFIL 3 -->
+        <article class="card ai">
+            <div>
+                <span class="badge">Profil Innowacyjny</span>
+                <h2>AI & Software Development</h2>
+                <p class="subtitle">Tworzenie oprogramowania, algorytmika i nowoczesne uczenie maszynowe.</p>
+
+                <div class="qualifications">
+                    <strong>Główne kwalifikacje:</strong><br>
+                    • INF.02 (Sprzęt i sieci)<br>
+                    • INF.03 (Tworzenie aplikacji i baz)
+                </div>
+
+                <div class="section-title">Przedmioty innowacyjne (1–2 h/tyg. od 2. kl.)</div>
+                <ul>
+                    <li>Inżynieria Oprogramowania i Python</li>
+                    <li>Podstawy AI i Machine Learningu</li>
+                </ul>
+
+                <div class="section-title">Zakres materiału i umiejętności</div>
+                <ul>
+                    <li><strong>Programowanie:</strong> Zaawansowany Python, JavaScript/TypeScript oraz bazy danych (SQL, NoSQL).</li>
+                    <li><strong>Sztuczna Inteligencja:</strong> Machine Learning (Scikit-Learn), analiza danych (Pandas, NumPy), integracja z LLM.</li>
+                    <li><strong>Aplikacje webowe:</strong> Budowa nowoczesnych aplikacji wykorzystujących moduły AI (chatboty, wyszukiwarki).</li>
+                    <li><strong>Laboratorium AI:</strong> Trenowanie modeli na GPU oraz optymalizacja i generowanie kodu źródłowego.</li>
+                </ul>
+            </div>
+        </article>
+
+    </main>
+
+    <footer>
+        <p>&copy; ZSP Nietążkowo — Zespół Szkół Ponadpodstawowych im. J. A. Kłoczowskiego</p>
+    </footer>
+
 </body>
 </html>

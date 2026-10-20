@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>SafeSchool - Panel Nauczyciela</title>
+  
+  <!-- Firebase SDK (Compat) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -419,7 +424,7 @@
     </div>
 
     <div class="status-panel">
-      <span>Status: Zalogowano</span>
+      <span>Status: Zalogowano (Online)</span>
       <button id="logoutBtn" class="logout-link">Wyloguj</button>
     </div>
   </div>
@@ -437,6 +442,20 @@
   </div>
 
   <script>
+    // --- KONFIGURACJA FIREBASE (Wpisz dane swojego projektu) ---
+   const firebaseConfig = {
+  apiKey: "AIzaSyAxnWDKGg-QDy4Nya63R-YOhsJ7PtPq6Qc",
+  authDomain: "safe-school-alarm.firebaseapp.com",
+  databaseURL: "https://safe-school-alarm-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "safe-school-alarm",
+  storageBucket: "safe-school-alarm.firebasestorage.app",
+  messagingSenderId: "582376430424",
+  appId: "1:582376430424:web:0a3a6653e42709e949a32d"
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     const CORRECT_PIN = "2026"; 
     const loginScreen = document.getElementById('loginScreen');
     const pinInput = document.getElementById('pinInput');
@@ -502,6 +521,55 @@
     let cancelTimer = null;
     const holdDuration = 2000;
 
+    // --- WEB AUDIO API - SYRENA ALARMOWA ---
+    let audioCtx = null;
+    let alarmInterval = null;
+
+    function playAlarmSound() {
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        function makeBeep() {
+          if (!alarmScreen.classList.contains('active')) return;
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+
+          osc.type = 'sawtooth';
+          const now = audioCtx.currentTime;
+          osc.frequency.setValueAtTime(400, now);
+          osc.frequency.linearRampToValueAtTime(800, now + 0.4);
+          osc.frequency.linearRampToValueAtTime(400, now + 0.8);
+
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.8);
+        }
+
+        makeBeep();
+        alarmInterval = setInterval(makeBeep, 900);
+      } catch (e) {
+        console.log("Audio API error: ", e);
+      }
+    }
+
+    function stopAlarmSound() {
+      if (alarmInterval) {
+        clearInterval(alarmInterval);
+        alarmInterval = null;
+      }
+    }
+
+    // Obsługa przytrzymania przycisku strefy -> wysyła do bazy w chmurze
     zoneButtons.forEach(btn => {
       ['mousedown', 'touchstart'].forEach(eventType => {
         btn.addEventListener(eventType, (e) => startHold(e, btn));
@@ -518,7 +586,16 @@
       overlay.style.height = '100%';
 
       const zoneName = btn.getAttribute('data-zone');
-      holdTimer = setTimeout(() => triggerAlarm(zoneName, currentThreatType), holdDuration);
+      
+      // Po 2 sekundach zapisujemy stan alarmu do bazy Firebase (wszystkie telefony to odczytają)
+      holdTimer = setTimeout(() => {
+        db.ref('activeAlarm').set({
+          active: true,
+          zone: zoneName,
+          type: currentThreatType,
+          timestamp: Date.now()
+        });
+      }, holdDuration);
     }
 
     function cancelHold(btn) {
@@ -537,8 +614,20 @@
       }, 10);
     }
 
-    function triggerAlarm(zoneName, type) {
-      holdTimer = null;
+    // --- NASŁUCHIWANIE BAZY DANYCH W CZASIE RZECZYWISTYM (WSZYSTKIE 40 TELEFONÓW) ---
+    db.ref('activeAlarm').on('value', (snapshot) => {
+      const data = snapshot.val();
+      
+      if (data && data.active) {
+        // Uruchomienie alarmu na tym urządzeniu
+        triggerAlarmRemote(data.zone, data.type);
+      } else {
+        // Wyłączenie alarmu
+        dismissAlarmRemote();
+      }
+    });
+
+    function triggerAlarmRemote(zoneName, type) {
       zoneButtons.forEach(b => {
         b.querySelector('.progress-overlay').style.transition = 'none';
         b.querySelector('.progress-overlay').style.height = '0%';
@@ -547,22 +636,29 @@
       alarmScreen.className = '';
 
       if (type === 'evacuation') {
+        // --- SCENARIUSZ 1: EWAKUACJA (GŁOŚNY DŹWIĘK + WIBRACJE) ---
         alarmScreen.classList.add('active', 'type-evacuation');
         alarmTitle.innerText = "🚨 EWAKUACJA SZKOŁY!";
         alarmDesc.innerText = "Natychmiast opuść budynek i udaj się w bezpieczne miejsce.";
+        
         if ("vibrate" in navigator) {
           navigator.vibrate([400, 200, 400, 200, 600]);
         }
+        playAlarmSound();
+
       } else {
+        // --- SCENARIUSZ 2: NAPASTNIK / AZYL (CAŁKOWITA CISZA I BRAK WIBRACJI) ---
         alarmScreen.classList.add('active', 'type-intruder');
         alarmTitle.innerText = "🥷 NAPASTNIK / AZYL!";
         alarmDesc.innerText = "ZAMKNIJ SALĘ! Zachowaj absolutną ciszę. Telefon jest całkowicie wyciszony.";
-        // BRAK WIBRACJI DLA AZYLU - całkowita cisza w kryjówce!
+        
+        // CELOWO POMIJAMY DŹWIĘK ORAZ WIBRACJE DLA BEZPIECZEŃSTWA!
       }
 
       alarmLocationText.innerText = zoneName.toUpperCase();
     }
 
+    // Odwoływanie alarmu (przytrzymanie przycisku anulowania)
     ['mousedown', 'touchstart'].forEach(eventType => {
       cancelBtn.addEventListener(eventType, startCancelHold);
     });
@@ -576,7 +672,8 @@
       cancelProgress.style.width = '100%';
 
       cancelTimer = setTimeout(() => {
-        dismissAlarm();
+        // Czyszczymy stan w bazie Firebase – odwoła alarm na wszystkich 40 telefonach naraz!
+        db.ref('activeAlarm').set({ active: false });
       }, holdDuration);
     }
 
@@ -595,13 +692,18 @@
       }, 10);
     }
 
-    function dismissAlarm() {
-      cancelTimer = null;
+    function dismissAlarmRemote() {
+      if (cancelTimer) {
+        clearTimeout(cancelTimer);
+        cancelTimer = null;
+      }
       cancelProgress.style.transition = 'none';
       cancelProgress.style.width = '0%';
       
+      // Zatrzymujemy dźwięk syreny
+      stopAlarmSound();
+      
       alarmScreen.className = '';
-      alert("✅ Sytuacja została odwołana i zresetowana.");
     }
   </script>
 

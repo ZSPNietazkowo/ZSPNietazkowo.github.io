@@ -537,7 +537,7 @@
       }, 10);
     }
 
-    function triggerAlarm(zoneName, type) {
+   function triggerAlarm(zoneName, type) {
       holdTimer = null;
       zoneButtons.forEach(b => {
         b.querySelector('.progress-overlay').style.transition = 'none';
@@ -550,25 +550,30 @@
         alarmScreen.classList.add('active', 'type-evacuation');
         alarmTitle.innerText = "🚨 EWAKUACJA SZKOŁY!";
         alarmDesc.innerText = "Natychmiast opuść budynek i udaj się w bezpieczne miejsce.";
+        
+        // Wibracja
         if ("vibrate" in navigator) {
           navigator.vibrate([400, 200, 400, 200, 600]);
         }
+
+        // GŁOSOWY KOMUNIKAT ALARMOWY (Przeglądarka przeczyta to na głos)
+        if ('speechSynthesis' in window) {
+          const speech = new SpeechSynthesisUtterance(`Uwaga! Ewakuacja! ${zoneName}! Natychmiast opuść budynek!`);
+          speech.lang = 'pl-PL';
+          speech.rate = 1.0; // prędkość mowy
+          speech.pitch = 1.1; // ton głosu
+          window.speechSynthesis.speak(speech);
+        }
+
       } else {
         alarmScreen.classList.add('active', 'type-intruder');
         alarmTitle.innerText = "🥷 NAPASTNIK / AZYL!";
         alarmDesc.innerText = "ZAMKNIJ SALĘ! Zachowaj absolutną ciszę. Telefon jest całkowicie wyciszony.";
-        // BRAK WIBRACJI DLA AZYLU - całkowita cisza w kryjówce!
+        // BRAK DŹWIĘKU I BRAK WIBRACJI DLA AZYLU - całkowita cisza!
       }
 
       alarmLocationText.innerText = zoneName.toUpperCase();
     }
-
-    ['mousedown', 'touchstart'].forEach(eventType => {
-      cancelBtn.addEventListener(eventType, startCancelHold);
-    });
-    ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(eventType => {
-      cancelBtn.addEventListener(eventType, stopCancelHold);
-    });
 
     function startCancelHold(e) {
       e.preventDefault();

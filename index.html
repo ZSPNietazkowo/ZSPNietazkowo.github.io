@@ -1,260 +1,609 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Technik Informatyk - ZSP Nietążkowo</title>
-    <style>
-        :root {
-            --primary: #00f2fe;
-            --secondary: #4facfe;
-            --bg-dark: #0f172a;
-            --card-bg: #1e293b;
-            --text-light: #f8fafc;
-            --text-gray: #94a3b8;
-            --accent-green: #10b981;
-            --accent-purple: #a855f7;
-            --accent-blue: #3b82f6;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SafeSchool - Panel Nauczyciela</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    body {
+      background-color: #0d1117;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 100vh;
+      padding: 15px;
+      text-align: center;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            line-height: 1.6;
-            padding: 20px;
-        }
+    header h1 {
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      color: #8b949e;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
 
-        header {
-            text-align: center;
-            padding: 40px 20px;
-            max-width: 900px;
-            margin: 0 auto 30px auto;
-        }
+    header p {
+      font-size: 0.8rem;
+      color: #484f58;
+    }
 
-        header h1 {
-            font-size: 2.5rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
+    /* --- EKRAN LOGOWANIA PIN --- */
+    #loginScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #0d1117;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+      z-index: 1000;
+    }
 
-        header p {
-            color: var(--text-gray);
-            font-size: 1.1rem;
-        }
+    #loginScreen.hidden {
+      display: none;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-        }
+    .login-box {
+      background: #161b22;
+      border: 1px solid #30363d;
+      padding: 30px 20px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 320px;
+    }
 
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.3s ease, border-color 0.3s ease;
-        }
+    .login-box h2 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #c9d1d9;
+    }
 
-        .card:hover {
-            transform: translateY(-5px);
-        }
+    .login-box p {
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-bottom: 20px;
+    }
 
-        .card.esport { border-top: 4px solid var(--accent-purple); }
-        .card.cyber { border-top: 4px solid var(--accent-green); }
-        .card.ai { border-top: 4px solid var(--accent-blue); }
+    .pin-input {
+      width: 100%;
+      padding: 12px;
+      font-size: 1.5rem;
+      text-align: center;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      color: white;
+      letter-spacing: 5px;
+      margin-bottom: 15px;
+      outline: none;
+    }
 
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-bottom: 15px;
-            width: fit-content;
-        }
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: #238636;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-        .esport .badge { background: rgba(168, 85, 247, 0.2); color: var(--accent-purple); }
-        .cyber .badge { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
-        .ai .badge { background: rgba(59, 130, 246, 0.2); color: var(--accent-blue); }
+    .login-error {
+      color: #f85149;
+      font-size: 0.8rem;
+      margin-top: 10px;
+      display: none;
+    }
 
-        h2 {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
+    /* --- GŁÓWNA APLIKACJA --- */
+    .app-content {
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-grow: 1;
+      justify-content: space-between;
+    }
 
-        .subtitle {
-            color: var(--text-gray);
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-        }
+    .threat-selector {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      margin: 15px 0;
+    }
 
-        .section-title {
-            font-size: 0.9rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            color: var(--primary);
-            letter-spacing: 1px;
-            margin-top: 15px;
-            margin-bottom: 8px;
-        }
+    .threat-tab {
+      flex: 1;
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 10px;
+      padding: 10px 5px;
+      color: #8b949e;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
 
-        ul {
-            list-style: none;
-            margin-bottom: 15px;
-        }
+    .threat-tab.active.evacuation {
+      background: rgba(218, 54, 51, 0.15);
+      border-color: #da3633;
+      color: #ff7b72;
+    }
 
-        ul li {
-            position: relative;
-            padding-left: 20px;
-            margin-bottom: 8px;
-            font-size: 0.95rem;
-            color: #cbd5e1;
-        }
+    .threat-tab.active.intruder {
+      background: rgba(187, 128, 9, 0.15);
+      border-color: #bb8009;
+      color: #e3b341;
+    }
 
-        ul li::before {
-            content: "▹";
-            position: absolute;
-            left: 0;
-            color: var(--primary);
-        }
+    .instruction {
+      font-size: 0.85rem;
+      color: #8b949e;
+      margin-bottom: 10px;
+    }
 
-        .qualifications {
-            background: rgba(0,0,0,0.2);
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            color: var(--text-gray);
-            margin-bottom: 15px;
-        }
+    .zones-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
 
-        footer {
-            text-align: center;
-            margin-top: 50px;
-            padding: 20px;
-            color: var(--text-gray);
-            font-size: 0.9rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-    </style>
+    .zone-btn {
+      position: relative;
+      background: linear-gradient(145deg, #21262d, #161b22);
+      border: 2px solid #30363d;
+      border-radius: 12px;
+      padding: 15px 10px;
+      color: white;
+      font-size: 0.9rem;
+      font-weight: bold;
+      cursor: pointer;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80px;
+      outline: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .zone-btn:active {
+      transform: scale(0.97);
+    }
+
+    .zone-icon {
+      font-size: 1.2rem;
+      margin-bottom: 3px;
+    }
+
+    .progress-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0%;
+      background: rgba(218, 54, 51, 0.4);
+      transition: height 0.05s linear;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .zone-btn.intruder-mode .progress-overlay {
+      background: rgba(187, 128, 9, 0.4);
+    }
+
+    .zone-btn span {
+      position: relative;
+      z-index: 2;
+    }
+
+    .zone-btn.full-width {
+      grid-column: span 2;
+      min-height: 65px;
+      flex-direction: row;
+      gap: 10px;
+    }
+
+    .status-panel {
+      background: #161b22;
+      border: 1px solid #30363d;
+      padding: 8px 12px;
+      border-radius: 8px;
+      width: 100%;
+      font-size: 0.75rem;
+      color: #8b949e;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logout-link {
+      color: #f85149;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.75rem;
+    }
+
+    /* --- EKRANY ALARMOWE --- */
+    #alarmScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    #alarmScreen.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #alarmScreen.type-evacuation {
+      background-color: #b62324;
+      animation: pulseEvac 1s infinite alternate;
+    }
+    @keyframes pulseEvac {
+      0% { background-color: #b62324; }
+      100% { background-color: #da3633; }
+    }
+
+    #alarmScreen.type-intruder {
+      background-color: #1a1200;
+      border: 6px solid #bb8009;
+    }
+
+    #alarmScreen h2 {
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    #alarmLocationText {
+      font-size: 1.2rem;
+      font-weight: bold;
+      background: rgba(0,0,0,0.4);
+      padding: 8px 16px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    #alarmScreen p {
+      font-size: 0.9rem;
+      margin-bottom: 25px;
+      max-width: 300px;
+      line-height: 1.4;
+    }
+
+    .cancel-alarm-container {
+      position: relative;
+      width: 100%;
+      max-width: 260px;
+      height: 50px;
+      border-radius: 25px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    #cancelBtn {
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      color: #0d1117;
+      border: none;
+      font-size: 0.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      position: relative;
+      z-index: 2;
+      outline: none;
+    }
+
+    .cancel-progress-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.2);
+      transition: width 0.05s linear;
+      pointer-events: none;
+      z-index: 1;
+    }
+  </style>
 </head>
 <body>
 
+  <!-- Ekran logowania PIN -->
+  <div id="loginScreen">
+    <div class="login-box">
+      <h2>SafeSchool</h2>
+      <p>Wprowadź kod PIN nauczyciela, aby odblokować panel alarmowy.</p>
+      <input type="password" id="pinInput" class="pin-input" maxlength="4" placeholder="••••">
+      <button id="loginBtn" class="login-btn">Zaloguj się</button>
+      <div id="loginError" class="login-error">Niepoprawny PIN!</div>
+    </div>
+  </div>
+
+  <div class="app-content">
     <header>
-        <h1>Technik Informatyk</h1>
-        <p>Innowacyjne profile kształcenia i rozszerzenia w ZSP Nietążkowo</p>
+      <h1>SafeSchool</h1>
+      <p>Panel Służbowy Nauczyciela</p>
     </header>
 
-    <main class="container">
+    <div class="threat-selector">
+      <button class="threat-tab active evacuation" id="tabEvacuation" data-type="evacuation">
+        <span>🚨</span>
+        <span>Ewakuacja (Głośna)</span>
+      </button>
+      <button class="threat-tab intruder" id="tabIntruder" data-type="intruder">
+        <span>🥷</span>
+        <span>Napastnik / Azyl (Cichy)</span>
+      </button>
+    </div>
 
-        <!-- PROFIL 1 -->
-        <article class="card esport">
-            <div>
-                <span class="badge">Profil Innowacyjny</span>
-                <h2>Technologie E-sportu i AI</h2>
-                <p class="subtitle">Specjalizacja nakierowana na infrastrukturę gamingową, serwery oraz e-sport.</p>
-                
-                <div class="qualifications">
-                    <strong>Główne kwalifikacje:</strong><br>
-                    • INF.02 (Hardware, sieci, systemy)<br>
-                    • INF.03 (Aplikacje, strony WWW)
-                </div>
+    <div class="instruction" id="instructionText">Przytrzymaj strefę (2 sekundy):</div>
 
-                <div class="section-title">Przedmioty innowacyjne (1–2 h/tyg. od 2. kl.)</div>
-                <ul>
-                    <li>Architektura Sprzętu Gamingowego i Sieci LAN/WAN</li>
-                    <li>Serwery Gier i Administracja Infrastrukturą E-sportową</li>
-                </ul>
+    <div class="zones-grid" id="zonesGrid">
+      <button class="zone-btn" data-zone="Budynek A">
+        <div class="progress-overlay"></div>
+        <span class="zone-icon">🏫</span>
+        <span>Budynek A</span>
+      </button>
 
-                <div class="section-title">Zakres materiału i umiejętności</div>
-                <ul>
-                    <li><strong>Sieci pod e-sport:</strong> Budowa niskopóźnieniowych sieci LAN na turnieje (routing, QoS, minimalizacja pingu, ochrona DDoS).</li>
-                    <li><strong>Sprzęt i modding:</strong> Overclocking, diagnostyka, chłodzenie, budowa stacji do gier i streamingu.</li>
-                    <li><strong>Serwery gier:</strong> Stawianie dedykowanych serwerów (CS2, Minecraft, Rust) na Linux/Windows Server.</li>
-                    <li><strong>Laboratorium AI:</strong> Optymalizacja kodu z AI, analiza statystyk graczy, testy GPU na laptopach z KPO.</li>
-                </ul>
-            </div>
-        </article>
+      <button class="zone-btn" data-zone="Budynek B">
+        <div class="progress-overlay"></div>
+        <span class="zone-icon">🏫</span>
+        <span>Budynek B</span>
+      </button>
 
-        <!-- PROFIL 2 -->
-        <article class="card cyber">
-            <div>
-                <span class="badge">Profil Innowacyjny</span>
-                <h2>Cyberbezpieczeństwo</h2>
-                <p class="subtitle">Klasa ukierunkowana na ochronę infrastruktury cyfrowej i etyczny hacking.</p>
+      <button class="zone-btn" data-zone="Budynek C">
+        <div class="progress-overlay"></div>
+        <span class="zone-icon">🏫</span>
+        <span>Budynek C</span>
+      </button>
 
-                <div class="qualifications">
-                    <strong>Główne kwalifikacje:</strong><br>
-                    • INF.02 (Administracja sieciami)<br>
-                    • INF.03 (Aplikacje i bazy)
-                </div>
+      <button class="zone-btn" data-zone="Hala Sportowa">
+        <div class="progress-overlay"></div>
+        <span class="zone-icon">⚽</span>
+        <span>Hala Sportowa</span>
+      </button>
 
-                <div class="section-title">Przedmioty innowacyjne (1–2 h/tyg. od 2. kl.)</div>
-                <ul>
-                    <li>Praktyczne Cyberbezpieczeństwo</li>
-                    <li>Automatyzacja i Administracja Systemami (Bash/Python)</li>
-                </ul>
+      <button class="zone-btn full-width" data-zone="Internat Nowy">
+        <div class="progress-overlay"></div>
+        <span class="zone-icon">🏢</span>
+        <span>Internat Nowy</span>
+      </button>
 
-                <div class="section-title">Zakres materiału i umiejętności</div>
-                <ul>
-                    <li><strong>Bezpieczeństwo sieci:</strong> Konfiguracja firewalli, systemów IDS/IPS, sieci VPN i segmentacja VLAN.</li>
-                    <li><strong>Etyczny hacking:</strong> Analiza ruchu (Wireshark), skanowanie podatności (Nmap) i testy penetracyjne.</li>
-                    <li><strong>Twarda administracja:</strong> Zarządzanie systemami Linux (Debian/Ubuntu Server) oraz Windows Server.</li>
-                    <li><strong>Laboratorium AI:</strong> Detekcja anomalii sieciowych przy użyciu lokalnych modeli AI, automatyzacja skryptów.</li>
-                </ul>
-            </div>
-        </article>
+      <button class="zone-btn full-width" data-zone="Internat Stary">
+        <div class="progress-overlay"></div>
+        <span class="zone-icon">🏡</span>
+        <span>Internat Stary</span>
+      </button>
+    </div>
 
-        <!-- PROFIL 3 -->
-        <article class="card ai">
-            <div>
-                <span class="badge">Profil Innowacyjny</span>
-                <h2>AI & Software Development</h2>
-                <p class="subtitle">Tworzenie oprogramowania, algorytmika i nowoczesne uczenie maszynowe.</p>
+    <div class="status-panel">
+      <span>Status: Zalogowano</span>
+      <button id="logoutBtn" class="logout-link">Wyloguj</button>
+    </div>
+  </div>
 
-                <div class="qualifications">
-                    <strong>Główne kwalifikacje:</strong><br>
-                    • INF.02 (Sprzęt i sieci)<br>
-                    • INF.03 (Tworzenie aplikacji i baz)
-                </div>
+  <!-- Ekran alarmowy -->
+  <div id="alarmScreen">
+    <h2 id="alarmTitle">🚨 ALARM!</h2>
+    <div id="alarmLocationText">LOKALIZACJA</div>
+    <p id="alarmDesc">Zgłoszenie aktywne.</p>
+    
+    <div class="cancel-alarm-container">
+      <div class="cancel-progress-overlay" id="cancelProgress"></div>
+      <button id="cancelBtn">PRZYTRZYMAJ 2S, ABY ODWOŁAĆ</button>
+    </div>
+  </div>
 
-                <div class="section-title">Przedmioty innowacyjne (1–2 h/tyg. od 2. kl.)</div>
-                <ul>
-                    <li>Inżynieria Oprogramowania i Python</li>
-                    <li>Podstawy AI i Machine Learningu</li>
-                </ul>
+  <script>
+    const CORRECT_PIN = "2026"; 
+    const loginScreen = document.getElementById('loginScreen');
+    const pinInput = document.getElementById('pinInput');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginError = document.getElementById('loginError');
+    const logoutBtn = document.getElementById('logoutBtn');
 
-                <div class="section-title">Zakres materiału i umiejętności</div>
-                <ul>
-                    <li><strong>Programowanie:</strong> Zaawansowany Python, JavaScript/TypeScript oraz bazy danych (SQL, NoSQL).</li>
-                    <li><strong>Sztuczna Inteligencja:</strong> Machine Learning (Scikit-Learn), analiza danych (Pandas, NumPy), integracja z LLM.</li>
-                    <li><strong>Aplikacje webowe:</strong> Budowa nowoczesnych aplikacji wykorzystujących moduły AI (chatboty, wyszukiwarki).</li>
-                    <li><strong>Laboratorium AI:</strong> Trenowanie modeli na GPU oraz optymalizacja i generowanie kodu źródłowego.</li>
-                </ul>
-            </div>
-        </article>
+    if (localStorage.getItem('teacherLoggedIn') === 'true') {
+      loginScreen.classList.add('hidden');
+    }
 
-    </main>
+    loginBtn.addEventListener('click', checkPin);
+    pinInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') checkPin();
+    });
 
-    <footer>
-        <p>&copy; ZSP Nietążkowo — Zespół Szkół Ponadpodstawowych im. J. Kasprowicza</p>
-    </footer>
+    function checkPin() {
+      if (pinInput.value === CORRECT_PIN) {
+        localStorage.setItem('teacherLoggedIn', 'true');
+        loginScreen.classList.add('hidden');
+        loginError.style.display = 'none';
+        pinInput.value = '';
+      } else {
+        loginError.style.display = 'block';
+        pinInput.value = '';
+      }
+    }
+
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('teacherLoggedIn');
+      loginScreen.classList.remove('hidden');
+    });
+
+    let currentThreatType = 'evacuation';
+    const tabEvacuation = document.getElementById('tabEvacuation');
+    const tabIntruder = document.getElementById('tabIntruder');
+    const zonesGrid = document.getElementById('zonesGrid');
+
+    tabEvacuation.addEventListener('click', () => {
+      currentThreatType = 'evacuation';
+      tabEvacuation.className = 'threat-tab active evacuation';
+      tabIntruder.className = 'threat-tab intruder';
+      zonesGrid.querySelectorAll('.zone-btn').forEach(b => b.classList.remove('intruder-mode'));
+    });
+
+    tabIntruder.addEventListener('click', () => {
+      currentThreatType = 'intruder';
+      tabIntruder.className = 'threat-tab active intruder';
+      tabEvacuation.className = 'threat-tab evacuation';
+      zonesGrid.querySelectorAll('.zone-btn').forEach(b => b.classList.add('intruder-mode'));
+    });
+
+    const zoneButtons = document.querySelectorAll('.zone-btn');
+    const alarmScreen = document.getElementById('alarmScreen');
+    const alarmTitle = document.getElementById('alarmTitle');
+    const alarmLocationText = document.getElementById('alarmLocationText');
+    const alarmDesc = document.getElementById('alarmDesc');
+    
+    const cancelBtn = document.getElementById('cancelBtn');
+    const cancelProgress = document.getElementById('cancelProgress');
+
+    let holdTimer = null;
+    let cancelTimer = null;
+    const holdDuration = 2000;
+
+    zoneButtons.forEach(btn => {
+      ['mousedown', 'touchstart'].forEach(eventType => {
+        btn.addEventListener(eventType, (e) => startHold(e, btn));
+      });
+      ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(eventType => {
+        btn.addEventListener(eventType, () => cancelHold(btn));
+      });
+    });
+
+    function startHold(e, btn) {
+      e.preventDefault();
+      const overlay = btn.querySelector('.progress-overlay');
+      overlay.style.transition = `height ${holdDuration}ms linear`;
+      overlay.style.height = '100%';
+
+      const zoneName = btn.getAttribute('data-zone');
+      holdTimer = setTimeout(() => triggerAlarm(zoneName, currentThreatType), holdDuration);
+    }
+
+    function cancelHold(btn) {
+      if (!holdTimer) return;
+      clearTimeout(holdTimer);
+      holdTimer = null;
+
+      const overlay = btn.querySelector('.progress-overlay');
+      const currentHeight = window.getComputedStyle(overlay).height;
+      overlay.style.transition = 'none';
+      overlay.style.height = currentHeight;
+      
+      setTimeout(() => {
+        overlay.style.transition = 'height 0.2s ease';
+        overlay.style.height = '0%';
+      }, 10);
+    }
+
+    function triggerAlarm(zoneName, type) {
+      holdTimer = null;
+      zoneButtons.forEach(b => {
+        b.querySelector('.progress-overlay').style.transition = 'none';
+        b.querySelector('.progress-overlay').style.height = '0%';
+      });
+
+      alarmScreen.className = '';
+
+      if (type === 'evacuation') {
+        alarmScreen.classList.add('active', 'type-evacuation');
+        alarmTitle.innerText = "🚨 EWAKUACJA SZKOŁY!";
+        alarmDesc.innerText = "Natychmiast opuść budynek i udaj się w bezpieczne miejsce.";
+        if ("vibrate" in navigator) {
+          navigator.vibrate([400, 200, 400, 200, 600]);
+        }
+      } else {
+        alarmScreen.classList.add('active', 'type-intruder');
+        alarmTitle.innerText = "🥷 NAPASTNIK / AZYL!";
+        alarmDesc.innerText = "ZAMKNIJ SALĘ! Zachowaj absolutną ciszę. Telefon jest całkowicie wyciszony.";
+        // BRAK WIBRACJI DLA AZYLU - całkowita cisza w kryjówce!
+      }
+
+      alarmLocationText.innerText = zoneName.toUpperCase();
+    }
+
+    ['mousedown', 'touchstart'].forEach(eventType => {
+      cancelBtn.addEventListener(eventType, startCancelHold);
+    });
+    ['mouseup', 'mouseleave', 'touchend', 'touchcancel'].forEach(eventType => {
+      cancelBtn.addEventListener(eventType, stopCancelHold);
+    });
+
+    function startCancelHold(e) {
+      e.preventDefault();
+      cancelProgress.style.transition = `width ${holdDuration}ms linear`;
+      cancelProgress.style.width = '100%';
+
+      cancelTimer = setTimeout(() => {
+        dismissAlarm();
+      }, holdDuration);
+    }
+
+    function stopCancelHold() {
+      if (!cancelTimer) return;
+      clearTimeout(cancelTimer);
+      cancelTimer = null;
+
+      const currentWidth = window.getComputedStyle(cancelProgress).width;
+      cancelProgress.style.transition = 'none';
+      cancelProgress.style.width = currentWidth;
+
+      setTimeout(() => {
+        cancelProgress.style.transition = 'width 0.2s ease';
+        cancelProgress.style.width = '0%';
+      }, 10);
+    }
+
+    function dismissAlarm() {
+      cancelTimer = null;
+      cancelProgress.style.transition = 'none';
+      cancelProgress.style.width = '0%';
+      
+      alarmScreen.className = '';
+      alert("✅ Sytuacja została odwołana i zresetowana.");
+    }
+  </script>
 
 </body>
 </html>
